@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  cassandra:
+    image: cassandra:2.2.4
+
+  kong:
+    image: mashape/kong:0.7.0
+    ports:
+      - "8001:8001"
+      - "8443:8443"
+      - "8000:8000"
+    command: sh -c 'until nc --recv-only -i 0.1 cassandra 9042 2>&1 >/dev/null|grep timeout >/dev/null; do :; done; kong start && tail -f /usr/local/kong/logs/error.log'
+
+  uppercaseit:
+    image: noamelf/uppercaseit
+  
+  boldit:
+    image: noamelf/boldit
+
+  graphite: 
+    image: hopsoft/graphite-statsd
+    ports: 
+      - "80:80"
